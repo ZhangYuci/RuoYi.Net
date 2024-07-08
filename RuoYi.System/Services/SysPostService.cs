@@ -70,9 +70,9 @@ public class SysPostService : BaseService<SysPost, SysPostDto>, ITransient
         return this.GetDtoList(dto);
     }
 
-    public List<long> GetPostIdsListByUserId(long userId)
+    public async Task<List<long>> GetPostIdsListByUserId(long userId)
     {
-        var dtos = this.GetPostsListByUserId(userId);
+        var dtos = await _sysUserPostRepository.GetDtoListAsync(new() { UserId = userId });
         return dtos.Where(p => p.PostId.HasValue).Select(p => p.PostId!.Value).Distinct().ToList();
     }
 

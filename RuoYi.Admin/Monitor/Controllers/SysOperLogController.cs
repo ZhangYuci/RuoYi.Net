@@ -27,7 +27,7 @@ namespace RuoYi.System.Controllers
         /// 查询操作日志记录列表
         /// </summary>
         [HttpGet("list")]
-        [AppAuthorize("system:log:list")]
+        [AppAuthorize("monitor:operlog:list")]
         public async Task<SqlSugarPagedList<SysOperLogDto>> GetSysOperLogList([FromQuery] SysOperLogDto dto)
         {
             return await _sysOperLogService.GetDtoPagedListAsync(dto);
@@ -37,7 +37,7 @@ namespace RuoYi.System.Controllers
         /// 删除 操作日志记录
         /// </summary>
         [HttpDelete("{ids}")]
-        [AppAuthorize("system:log:remove")]
+        [AppAuthorize("monitor:operlog:remove")]
         [RuoYi.System.Log(Title = "操作日志", BusinessType = BusinessType.DELETE)]
         public async Task<AjaxResult> Remove(string ids)
         {
@@ -50,7 +50,7 @@ namespace RuoYi.System.Controllers
         /// 删除 操作日志记录
         /// </summary>
         [HttpDelete("clean")]
-        [AppAuthorize("system:log:remove")]
+        [AppAuthorize("monitor:operlog:remove")]
         [RuoYi.System.Log(Title = "操作日志", BusinessType = BusinessType.CLEAN)]
         public AjaxResult Clean()
         {
@@ -62,7 +62,7 @@ namespace RuoYi.System.Controllers
         /// 导出 操作日志记录
         /// </summary>
         [HttpPost("export")]
-        [AppAuthorize("system:log:export")]
+        [AppAuthorize("monitor:operlog:export")]
         [RuoYi.System.Log(Title = "操作日志", BusinessType = BusinessType.EXPORT)]
         public async Task Export(SysOperLogDto dto)
         {

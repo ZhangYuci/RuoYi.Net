@@ -32,7 +32,7 @@ namespace RuoYi.Quartz.Controllers
         /// 查询定时任务调度日志列表
         /// </summary>
         [HttpGet("list")]
-        [AppAuthorize("monitor:joblog:list")]
+        [AppAuthorize("monitor:job:list")]
         public async Task<SqlSugarPagedList<SysJobLogDto>> GetSysJobPagedList([FromQuery] SysJobLogDto dto)
         {
             return await _sysJobLogService.GetDtoPagedListAsync(dto);
@@ -44,7 +44,7 @@ namespace RuoYi.Quartz.Controllers
         /// </summary>
         [HttpGet("")]
         [HttpGet("{jobLogId}")]
-        [AppAuthorize("monitor:joblog:query")]
+        [AppAuthorize("monitor:job:query")]
         public async Task<AjaxResult> Get(long jobLogId)
         {
             var data = await _sysJobLogService.GetDtoAsync(jobLogId);
@@ -55,7 +55,7 @@ namespace RuoYi.Quartz.Controllers
         /// 删除 定时任务调度日志
         /// </summary>
         [HttpDelete("{jobLogIds}")]
-        [AppAuthorize("monitor:joblog:remove")]
+        [AppAuthorize("monitor:job:remove")]
         [RuoYi.System.Log(Title = "定时任务", BusinessType = BusinessType.DELETE)]
         public async Task<AjaxResult> Remove(string jobLogIds)
         {
@@ -68,7 +68,7 @@ namespace RuoYi.Quartz.Controllers
         /// 清空 定时任务调度日志
         /// </summary>
         [HttpDelete("clean")]
-        [AppAuthorize("monitor:joblog:clean")]
+        [AppAuthorize("monitor:job:clean")]
         [RuoYi.System.Log(Title = "定时任务", BusinessType = BusinessType.CLEAN)]
         public AjaxResult Clean()
         {
@@ -80,7 +80,7 @@ namespace RuoYi.Quartz.Controllers
         /// 导出 定时任务调度日志
         /// </summary>
         [HttpPost("export")]
-        [AppAuthorize("monitor:joblog:export")]
+        [AppAuthorize("monitor:job:export")]
         [RuoYi.System.Log(Title = "定时任务", BusinessType = BusinessType.EXPORT)]
         public async Task Export(SysJobLogDto dto)
         {

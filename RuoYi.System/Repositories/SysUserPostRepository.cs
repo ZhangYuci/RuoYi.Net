@@ -31,8 +31,8 @@ namespace RuoYi.System.Repositories
                 .WhereIF(dto.PostId > 0, (t) => t.PostId == dto.PostId)
                 .Select((t) => new SysUserPostDto
                 {
-                    UserId = dto.UserId,
-                    PostId = dto.PostId
+                    UserId = t.UserId,
+                    PostId = t.PostId
                 });
         }
 

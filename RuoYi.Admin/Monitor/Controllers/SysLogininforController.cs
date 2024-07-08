@@ -29,7 +29,7 @@ namespace RuoYi.System.Controllers
         /// 查询系统访问记录列表
         /// </summary>
         [HttpGet("list")]
-        [AppAuthorize("system:logininfor:list")]
+        [AppAuthorize("monitor:logininfor:list")]
         public async Task<SqlSugarPagedList<SysLogininforDto>> GetSysLogininforList([FromQuery] SysLogininforDto dto)
         {
             return await _sysLogininforService.GetDtoPagedListAsync(dto);
@@ -40,7 +40,7 @@ namespace RuoYi.System.Controllers
         /// </summary>
         [HttpGet("")]
         [HttpGet("{id}")]
-        [AppAuthorize("system:logininfor:query")]
+        [AppAuthorize("monitor:logininfor:query")]
         public async Task<AjaxResult> Get(long id)
         {
             var data = await _sysLogininforService.GetDtoAsync(id);
@@ -51,7 +51,7 @@ namespace RuoYi.System.Controllers
         /// 新增 系统访问记录
         /// </summary>
         [HttpPost("")]
-        [AppAuthorize("system:logininfor:add")]
+        [AppAuthorize("monitor:logininfor:add")]
         [TypeFilter(typeof(RuoYi.Framework.DataValidation.DataValidationFilter))]
         [RuoYi.System.Log(Title = "系统访问记录", BusinessType = BusinessType.INSERT)]
         public async Task<AjaxResult> Add([FromBody] SysLogininforDto dto)
@@ -64,7 +64,7 @@ namespace RuoYi.System.Controllers
         /// 修改 系统访问记录
         /// </summary>
         [HttpPut("")]
-        [AppAuthorize("system:logininfor:edit")]
+        [AppAuthorize("monitor:logininfor:edit")]
         [TypeFilter(typeof(RuoYi.Framework.DataValidation.DataValidationFilter))]
         [RuoYi.System.Log(Title = "系统访问记录", BusinessType = BusinessType.UPDATE)]
         public async Task<AjaxResult> Edit([FromBody] SysLogininforDto dto)
@@ -77,7 +77,7 @@ namespace RuoYi.System.Controllers
         /// 删除 系统访问记录
         /// </summary>
         [HttpDelete("{ids}")]
-        [AppAuthorize("system:logininfor:remove")]
+        [AppAuthorize("monitor:logininfor:remove")]
         [RuoYi.System.Log(Title = "系统访问记录", BusinessType = BusinessType.DELETE)]
         public async Task<AjaxResult> Remove(string ids)
         {
@@ -90,7 +90,7 @@ namespace RuoYi.System.Controllers
         /// 清空 系统访问记录
         /// </summary>
         [HttpDelete("clean")]
-        [AppAuthorize("system:logininfor:remove")]
+        [AppAuthorize("monitor:logininfor:remove")]
         [RuoYi.System.Log(Title = "系统访问记录", BusinessType = BusinessType.CLEAN)]
         public AjaxResult Clean()
         {
@@ -102,7 +102,7 @@ namespace RuoYi.System.Controllers
         /// 导入 系统访问记录
         /// </summary>
         [HttpPost("import")]
-        [AppAuthorize("system:logininfor:import")]
+        [AppAuthorize("monitor:logininfor:import")]
         [RuoYi.System.Log(Title = "系统访问记录", BusinessType = BusinessType.IMPORT)]
         public async Task Import([Required] IFormFile file)
         {
@@ -116,7 +116,7 @@ namespace RuoYi.System.Controllers
         /// 导出 系统访问记录
         /// </summary>
         [HttpPost("export")]
-        [AppAuthorize("system:logininfor:export")]
+        [AppAuthorize("monitor:logininfor:export")]
         [RuoYi.System.Log(Title = "系统访问记录", BusinessType = BusinessType.EXPORT)]
         public async Task Export(SysLogininforDto dto)
         {

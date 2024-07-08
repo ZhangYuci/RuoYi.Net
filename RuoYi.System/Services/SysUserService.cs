@@ -268,6 +268,8 @@ public class SysUserService : BaseService<SysUser, SysUserDto>, ITransient
         // 新增用户信息
         user.Password = SecurityUtils.EncryptPassword(user.Password!);
         user.DelFlag = DelFlag.No;
+        user.CreateBy = SecurityUtils.GetUsername();
+        user.CreateTime = DateTime.Now;
         bool succees = _sysUserRepository.Insert(user);
         // 新增用户岗位关联
         InsertUserPost(user);
