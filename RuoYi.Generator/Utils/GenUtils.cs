@@ -59,7 +59,8 @@ namespace RuoYi.Generator.Utils
                 column.HtmlType = GenConstants.HTML_INPUT;
 
                 // 如果是浮点型 统一用Decimal, 如: decimal(18,2)
-                string[] str = column.ColumnType.SubstringBetween("(", ")").Split(",");
+                var str = column.ColumnType.SubstringBetween("(", ")")?.Split(",");
+
                 if (str != null && str.Length == 2 && int.Parse(str[1]) > 0)
                 {
                     column.NetType = GenConstants.TYPE_DECIMAL;
