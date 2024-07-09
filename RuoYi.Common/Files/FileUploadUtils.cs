@@ -89,7 +89,7 @@ namespace RuoYi.Common.Files
             // 文件物理路径
             var physicalPath = GetResourcePhysicalPath(subDirectory);
 
-            var datePath = DateTime.Now.To_Ymd("/");
+            var datePath = DateTime.Now.To_Ym();
 
             physicalPath = Path.Combine(physicalPath, datePath);
 
