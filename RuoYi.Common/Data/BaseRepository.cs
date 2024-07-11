@@ -298,7 +298,7 @@ public abstract class BaseRepository<TEntity, TDto> : ITransient
         SqlSugarPagedList<TDto> pagedInfo;
         if (!string.IsNullOrEmpty(pageDomain.PropertyName))
         {
-            OrderByType? orderByType = (pageDomain.IsAsc ?? "").EqualsIgnoreCase("desc") ? OrderByType.Desc : OrderByType.Asc;
+            OrderByType? orderByType = (pageDomain.IsAsc ?? "").EqualsIgnoreCase("descending") ? OrderByType.Desc : OrderByType.Asc;
             pagedInfo = await queryable
                 .OrderByPropertyName(pageDomain.PropertyName, orderByType)
                 .ToPagedListAsync(pageDomain.PageNum, pageDomain.PageSize);
