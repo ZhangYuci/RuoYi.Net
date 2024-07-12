@@ -24,7 +24,7 @@ namespace RuoYi.Common.Interceptors
         {
             try
             {
-                Console.WriteLine("Before service call");
+                //Console.WriteLine("Before service call");
 
                 // 获取当前的用户
                 LoginUser loginUser = SecurityUtils.GetLoginUser();
@@ -49,7 +49,7 @@ namespace RuoYi.Common.Interceptors
             }
             finally
             {
-                Console.WriteLine("After service call");
+                //Console.WriteLine("After service call");
             }
         }
 

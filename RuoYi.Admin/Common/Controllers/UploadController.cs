@@ -11,12 +11,12 @@ namespace RuoYi.Admin
     /// </summary>
     [ApiDescriptionSettings("Common")]
     [Route("common")]
-    public class IndexController : ControllerBase
+    public class UploadController : ControllerBase
     {
-        private readonly ILogger<IndexController> _logger;
+        private readonly ILogger<UploadController> _logger;
 
         private readonly SystemService _systemService;
-        public IndexController(ILogger<IndexController> logger, SystemService systemService)
+        public UploadController(ILogger<UploadController> logger, SystemService systemService)
         {
             _logger = logger;
             _systemService = systemService;
@@ -33,8 +33,13 @@ namespace RuoYi.Admin
             return _systemService.GetDescription();
         }
 
+        /// <summary>
+        /// 统一文件上传
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
         [HttpPost("upload")]
-        public async Task<AjaxResult> upload([Required] IFormFile file)
+        public async Task<AjaxResult> Upload([Required] IFormFile file)
         {
             if (file != null)
             {
