@@ -69,7 +69,7 @@ namespace RuoYi.Framework
 
                     db.GetConnectionScope(configId).Aop.OnLogExecuted = (sql, pars) => //SQL执行完
                     {
-                        Console.Write("time:" + db.Ado.SqlExecutionTime.ToString());//输出SQL执行时间
+                        Console.WriteLine("time:" + db.Ado.SqlExecutionTime.ToString());//输出SQL执行时间
                     };
                     db.GetConnectionScope(configId).Aop.OnError = (exp) =>//SQL报错
                     {

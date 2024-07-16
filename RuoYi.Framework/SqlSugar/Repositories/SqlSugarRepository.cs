@@ -22,8 +22,8 @@ public partial class SqlSugarRepository : ISqlSugarRepository
     {
         _serviceProvider = serviceProvider;
         var tenant = db.AsTenant();
-        DynamicContext = Context = (SqlSugarClient)tenant;
-        Ado = db.Ado;
+        DynamicContext = Context = tenant.GetConnectionScope(db.CurrentConnectionConfig.ConfigId);
+        Ado = Context.Ado;
     }
 
     /// <summary>
