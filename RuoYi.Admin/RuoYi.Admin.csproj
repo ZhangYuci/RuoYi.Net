@@ -6,7 +6,17 @@
 		<SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
 		<PublishReadyToRunComposite>true</PublishReadyToRunComposite>
 		<ImplicitUsings>enable</ImplicitUsings>
-	</PropertyGroup>	
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="Dockerfile" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Dockerfile">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>	
 
 	<ItemGroup>
 	  <ProjectReference Include="..\RuoYi.Common\RuoYi.Common.csproj" />
