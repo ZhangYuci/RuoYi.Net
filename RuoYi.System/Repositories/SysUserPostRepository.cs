@@ -18,7 +18,7 @@ namespace RuoYi.System.Repositories
 
         public override ISugarQueryable<SysUserPost> Queryable(SysUserPostDto dto)
         {
-            return Repo.AsQueryable()
+            return Repo.AsQueryable(copyNew: true)
                 .WhereIF(dto.UserId > 0, (t) => t.UserId == dto.UserId)
                 .WhereIF(dto.PostId > 0, (t) => t.PostId == dto.PostId)
             ;
@@ -26,7 +26,7 @@ namespace RuoYi.System.Repositories
 
         public override ISugarQueryable<SysUserPostDto> DtoQueryable(SysUserPostDto dto)
         {
-            return Repo.AsQueryable()
+            return Repo.AsQueryable(true)
                 .WhereIF(dto.UserId > 0, (t) => t.UserId == dto.UserId)
                 .WhereIF(dto.PostId > 0, (t) => t.PostId == dto.PostId)
                 .Select((t) => new SysUserPostDto

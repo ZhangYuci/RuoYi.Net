@@ -99,6 +99,8 @@ where TEntity : class, new()
     //public virtual ISugarQueryable<TEntity> Entities => Context.Queryable<TEntity>();
     public virtual ISugarQueryable<TEntity> Entities => Context.Queryable<TEntity>();
 
+    public virtual ISugarQueryable<TEntity> EntitiesNew => Context.CopyNew().Queryable<TEntity>();
+
     /// <summary>
     /// 数据库上下文
     /// </summary>
@@ -591,9 +593,9 @@ where TEntity : class, new()
     /// <summary>
     /// 构建查询分析器
     /// </summary>
-    public virtual ISugarQueryable<TEntity> AsQueryable()
+    public virtual ISugarQueryable<TEntity> AsQueryable(bool copyNew = false)
     {
-        return Entities;
+        return copyNew ? EntitiesNew : Entities;
     }
 
     /// <summary>
@@ -601,9 +603,9 @@ where TEntity : class, new()
     /// </summary>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    public virtual ISugarQueryable<TEntity> AsQueryable(Expression<Func<TEntity, bool>> predicate)
+    public virtual ISugarQueryable<TEntity> AsQueryable(Expression<Func<TEntity, bool>> predicate, bool copyNew = false)
     {
-        return Entities.Where(predicate);
+        return copyNew ? EntitiesNew.Where(predicate) : Entities.Where(predicate);
     }
 
     /// <summary>

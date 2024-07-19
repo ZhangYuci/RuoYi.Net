@@ -17,7 +17,7 @@ namespace RuoYi.System.Repositories
 
         public override ISugarQueryable<SysPost> Queryable(SysPostDto dto)
         {
-            return Repo.AsQueryable()
+            return Repo.AsQueryable(true)
                 //.Includes(t => t.SubTable)
                 .OrderBy((p) => p.PostSort)
                 .WhereIF(!string.IsNullOrEmpty(dto.Status), (p) => p.Status == dto.Status)
@@ -30,7 +30,7 @@ namespace RuoYi.System.Repositories
 
         public override ISugarQueryable<SysPostDto> DtoQueryable(SysPostDto dto)
         {
-            return Repo.AsQueryable()
+            return Repo.AsQueryable(true)
                 .LeftJoin<SysUserPost>((p, up) => p.PostId == up.PostId)
                 .LeftJoin<SysUser>((p, up, u) => up.UserId == u.UserId)
                 .OrderBy((p, up, u) => p.PostSort)

@@ -19,14 +19,14 @@ namespace RuoYi.Framework
                     // SQL执行前
                     db.GetConnectionScope(configId).Aop.OnLogExecuting = (sql, pars) =>
                     {
-                        //Console.WriteLine(sql);//输出sql
+                        Console.WriteLine(sql);//输出sql
                         App.PrintToMiniProfiler("SqlSugar", "Info", SqlProfiler.ParameterFormat(sql, pars));
                     };
 
                     //SQL执行完
                     db.GetConnectionScope(configId).Aop.OnLogExecuted = (sql, pars) => 
                     {
-                        //Console.WriteLine("time:" + db.Ado.SqlExecutionTime.ToString());//输出SQL执行时间
+                        Console.WriteLine("time:" + db.Ado.SqlExecutionTime.ToString());//输出SQL执行时间
                     };
 
                     //SQL报错

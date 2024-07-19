@@ -20,7 +20,7 @@ namespace RuoYi.System.Repositories
         public override ISugarQueryable<SysUser> Queryable(SysUserDto dto)
         {
             //return this.UserQueryable(dto);
-            return Repo.AsQueryable()
+            return Repo.AsQueryable(true)
                 //.Includes((u) => u.Dept)
                 .LeftJoin<SysDept>((u, d) => u.DeptId == d.DeptId)
                 .Where(u => u.DelFlag == DelFlag.No)
@@ -62,7 +62,7 @@ namespace RuoYi.System.Repositories
         /// </summary>
         public async Task<SysUserDto> GetUserDtoAsync(SysUserDto dto)
         {
-            var queryable = base.Repo.Context.Queryable<SysUser>()
+            var queryable = base.Repo.Context.CopyNew().Queryable<SysUser>()
                 .WhereIF(!string.IsNullOrEmpty(dto.DelFlag), u => u.DelFlag == dto.DelFlag)
                 .WhereIF(!string.IsNullOrEmpty(dto.UserName), u => u.UserName == dto.UserName)
                 .WhereIF(!string.IsNullOrEmpty(dto.Phonenumber), u => u.Phonenumber == dto.Phonenumber)
@@ -74,10 +74,10 @@ namespace RuoYi.System.Repositories
             if (userDto != null)
             {
                 // 部门
-                var dept = await base.Repo.Context.Queryable<SysDept>().FirstAsync(d => d.DeptId == userDto.DeptId);
+                var dept = await base.Repo.Context.CopyNew().Queryable<SysDept>().FirstAsync(d => d.DeptId == userDto.DeptId);
                 userDto.Dept = dept.Adapt<SysDeptDto>();
                 // 角色
-                var roles = await base.Repo.Context.Queryable<SysRole>()
+                var roles = await base.Repo.Context.CopyNew().Queryable<SysRole>()
                     .InnerJoin<SysUserRole>((r, ur) => r.RoleId == ur.RoleId)
                     .Where((r, ur) => ur.UserId == userDto.UserId)
                     .ToListAsync();

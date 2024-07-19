@@ -44,6 +44,9 @@ public partial interface ISqlSugarRepository<TEntity>
     /// </summary>
     ISugarQueryable<TEntity> Entities { get; }
 
+
+    ISugarQueryable<TEntity> EntitiesNew { get; }
+
     /// <summary>
     /// 数据库上下文
     /// </summary>
@@ -362,14 +365,14 @@ public partial interface ISqlSugarRepository<TEntity>
     /// 构建查询分析器
     /// </summary>
     /// <returns></returns>
-    ISugarQueryable<TEntity> AsQueryable();
+    ISugarQueryable<TEntity> AsQueryable(bool copyNew = false);
 
     /// <summary>
     /// 构建查询分析器
     /// </summary>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    ISugarQueryable<TEntity> AsQueryable(Expression<Func<TEntity, bool>> predicate);
+    ISugarQueryable<TEntity> AsQueryable(Expression<Func<TEntity, bool>> predicate, bool copyNew = false);
 
     /// <summary>
     /// 构建 sql 语句查询分析器

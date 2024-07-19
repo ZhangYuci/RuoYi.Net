@@ -18,7 +18,7 @@ namespace RuoYi.System.Repositories
 
         public override ISugarQueryable<SysRole> Queryable(SysRoleDto dto)
         {
-            return Repo.AsQueryable()
+            return Repo.AsQueryable(true)
                 .OrderBy((r) => r.RoleSort)
                 .Where((r) => r.DelFlag == DelFlag.No)
                 .WhereIF(dto.RoleId > 0, (r) => r.RoleId == dto.RoleId)
@@ -33,7 +33,7 @@ namespace RuoYi.System.Repositories
 
         public override ISugarQueryable<SysRoleDto> DtoQueryable(SysRoleDto dto)
         {
-            return Repo.AsQueryable()
+            return Repo.AsQueryable(true)
                 .LeftJoin<SysUserRole>((r, ur) => r.RoleId == ur.RoleId)
                 .LeftJoin<SysUser>((r, ur, u) => ur.UserId == u.UserId)
                 .LeftJoin<SysDept>((r, ur, u, d) => u.DeptId == d.DeptId)
