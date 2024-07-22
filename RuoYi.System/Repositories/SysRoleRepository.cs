@@ -18,7 +18,7 @@ namespace RuoYi.System.Repositories
 
         public override ISugarQueryable<SysRole> Queryable(SysRoleDto dto)
         {
-            return Repo.AsQueryable(true)
+            return Repo.AsQueryable()
                 .OrderBy((r) => r.RoleSort)
                 .Where((r) => r.DelFlag == DelFlag.No)
                 .WhereIF(dto.RoleId > 0, (r) => r.RoleId == dto.RoleId)
@@ -33,7 +33,7 @@ namespace RuoYi.System.Repositories
 
         public override ISugarQueryable<SysRoleDto> DtoQueryable(SysRoleDto dto)
         {
-            return Repo.AsQueryable(true)
+            return Repo.AsQueryable()
                 .LeftJoin<SysUserRole>((r, ur) => r.RoleId == ur.RoleId)
                 .LeftJoin<SysUser>((r, ur, u) => ur.UserId == u.UserId)
                 .LeftJoin<SysDept>((r, ur, u, d) => u.DeptId == d.DeptId)
@@ -101,6 +101,22 @@ namespace RuoYi.System.Repositories
         public async Task<int> DeleteByRoleIdsAsync(List<long> roleIds)
         {
             return await base.DeleteAsync(m => roleIds.Contains(m.RoleId));
+        }
+
+
+        public async Task<List<SysRole>> GetListWithNewInstanceAsync(SysRoleDto dto)
+        {
+            return await Repo.GetNewRepository().AsQueryable()
+                  .OrderBy((r) => r.RoleSort)
+                  .Where((r) => r.DelFlag == DelFlag.No)
+                  .WhereIF(dto.RoleId > 0, (r) => r.RoleId == dto.RoleId)
+                  .WhereIF(!string.IsNullOrEmpty(dto.RoleName), (r) => r.RoleName!.Contains(dto.RoleName!))
+                  .WhereIF(!string.IsNullOrEmpty(dto.RoleKey), (r) => r.RoleKey!.Contains(dto.RoleKey!))
+                  .WhereIF(!string.IsNullOrEmpty(dto.Status), (r) => r.Status == dto.Status)
+                  .WhereIF(dto.Params.BeginTime != null, (r) => r.CreateTime >= dto.Params.BeginTime)
+                  .WhereIF(dto.Params.EndTime != null, (r) => r.CreateTime <= dto.Params.EndTime)
+                  .WhereIF(!string.IsNullOrEmpty(dto.Params.DataScopeSql), dto.Params.DataScopeSql).ToListAsync()
+              ;
         }
     }
 }

@@ -50,8 +50,8 @@ namespace RuoYi.System.Controllers
         public async Task<AjaxResult> GetInfo(long? userId)
         {
             await _sysUserService.CheckUserDataScope(userId);
-            Task<List<SysRole>> roles = _sysRoleService.GetListAsync(new SysRoleDto());
-            Task<List<SysPost>> posts = _sysPostService.GetListAsync(new SysPostDto());
+            Task<List<SysRole>> roles = _sysRoleService.GetListWithNewInstanceAsync(new SysRoleDto());
+            Task<List<SysPost>> posts = _sysPostService.GetListWithNewInstanceAsync(new SysPostDto());
             var user = _sysUserService.GetDtoAsync(userId);
             var postIds = _sysPostService.GetPostIdsListByUserId(userId.Value);
             await Task.WhenAll(roles, roles, user, postIds);

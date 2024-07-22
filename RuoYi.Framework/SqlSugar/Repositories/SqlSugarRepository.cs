@@ -99,8 +99,6 @@ where TEntity : class, new()
     //public virtual ISugarQueryable<TEntity> Entities => Context.Queryable<TEntity>();
     public virtual ISugarQueryable<TEntity> Entities => Context.Queryable<TEntity>();
 
-    public virtual ISugarQueryable<TEntity> EntitiesNew => Context.CopyNew().Queryable<TEntity>();
-
     /// <summary>
     /// 数据库上下文
     /// </summary>
@@ -115,6 +113,15 @@ where TEntity : class, new()
     /// 原生 Ado 对象
     /// </summary>
     public virtual IAdo Ado { get; }
+
+    /// <summary>
+    /// 获取新的数据库链接上下文生成的数据仓储
+    /// </summary>
+    /// <returns></returns>
+    public SqlSugarRepository<TEntity> GetNewRepository()
+    {
+        return new SqlSugarRepository<TEntity>(this.Context.CopyNew());
+    }
 
     /// <summary>
     /// 获取总数
@@ -593,9 +600,9 @@ where TEntity : class, new()
     /// <summary>
     /// 构建查询分析器
     /// </summary>
-    public virtual ISugarQueryable<TEntity> AsQueryable(bool copyNew = false)
+    public virtual ISugarQueryable<TEntity> AsQueryable()
     {
-        return copyNew ? EntitiesNew : Entities;
+        return Entities;
     }
 
     /// <summary>
@@ -603,9 +610,9 @@ where TEntity : class, new()
     /// </summary>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    public virtual ISugarQueryable<TEntity> AsQueryable(Expression<Func<TEntity, bool>> predicate, bool copyNew = false)
+    public virtual ISugarQueryable<TEntity> AsQueryable(Expression<Func<TEntity, bool>> predicate)
     {
-        return copyNew ? EntitiesNew.Where(predicate) : Entities.Where(predicate);
+        return Entities.Where(predicate);
     }
 
     /// <summary>

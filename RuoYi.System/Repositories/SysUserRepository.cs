@@ -20,7 +20,7 @@ namespace RuoYi.System.Repositories
         public override ISugarQueryable<SysUser> Queryable(SysUserDto dto)
         {
             //return this.UserQueryable(dto);
-            return Repo.AsQueryable(true)
+            return Repo.AsQueryable()
                 //.Includes((u) => u.Dept)
                 .LeftJoin<SysDept>((u, d) => u.DeptId == d.DeptId)
                 .Where(u => u.DelFlag == DelFlag.No)

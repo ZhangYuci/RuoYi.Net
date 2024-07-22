@@ -32,7 +32,7 @@ public class SysRoleService : BaseService<SysRole, SysRoleDto>, ITransient
         _sysRoleRepository = sysRoleRepository;
         _sysRoleMenuRepository = sysRoleMenuRepository;
         _sysRoleDeptRepository = sysRoleDeptRepository;
-        _sysUserRoleRepository = sysUserRoleRepository;
+        _sysUserRoleRepository = sysUserRoleRepository; 
     }
 
     /// <summary>
@@ -312,4 +312,9 @@ public class SysRoleService : BaseService<SysRole, SysRoleDto>, ITransient
 
     #endregion
 
+
+    public async Task<List<SysRole>> GetListWithNewInstanceAsync(SysRoleDto dto)
+    {
+        return await _sysRoleRepository.GetListWithNewInstanceAsync(dto);
+    }
 }

@@ -18,7 +18,7 @@ namespace RuoYi.System.Repositories
 
         public override ISugarQueryable<SysUserPost> Queryable(SysUserPostDto dto)
         {
-            return Repo.AsQueryable(copyNew: true)
+            return Repo.AsQueryable()
                 .WhereIF(dto.UserId > 0, (t) => t.UserId == dto.UserId)
                 .WhereIF(dto.PostId > 0, (t) => t.PostId == dto.PostId)
             ;
@@ -26,7 +26,7 @@ namespace RuoYi.System.Repositories
 
         public override ISugarQueryable<SysUserPostDto> DtoQueryable(SysUserPostDto dto)
         {
-            return Repo.AsQueryable(true)
+            return Repo.AsQueryable()
                 .WhereIF(dto.UserId > 0, (t) => t.UserId == dto.UserId)
                 .WhereIF(dto.PostId > 0, (t) => t.PostId == dto.PostId)
                 .Select((t) => new SysUserPostDto
@@ -53,6 +53,19 @@ namespace RuoYi.System.Repositories
         public async Task<int> CountUserPostByIdAsync(long postId)
         {
             return await Repo.CountAsync(up => up.PostId == postId);
+        }
+
+
+        public async Task<List<SysUserPostDto>> GetDtoListWithNewInstanceAsync(SysUserPostDto dto)
+        {
+            return await Repo.GetNewRepository().AsQueryable()
+               .WhereIF(dto.UserId > 0, (t) => t.UserId == dto.UserId)
+               .WhereIF(dto.PostId > 0, (t) => t.PostId == dto.PostId)
+               .Select((t) => new SysUserPostDto
+               {
+                   UserId = t.UserId,
+                   PostId = t.PostId
+               }).ToListAsync();
         }
     }
 }

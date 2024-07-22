@@ -17,7 +17,7 @@ namespace RuoYi.System.Repositories
 
         public override ISugarQueryable<SysPost> Queryable(SysPostDto dto)
         {
-            return Repo.AsQueryable(true)
+            return Repo.AsQueryable()
                 //.Includes(t => t.SubTable)
                 .OrderBy((p) => p.PostSort)
                 .WhereIF(!string.IsNullOrEmpty(dto.Status), (p) => p.Status == dto.Status)
@@ -30,7 +30,7 @@ namespace RuoYi.System.Repositories
 
         public override ISugarQueryable<SysPostDto> DtoQueryable(SysPostDto dto)
         {
-            return Repo.AsQueryable(true)
+            return Repo.AsQueryable()
                 .LeftJoin<SysUserPost>((p, up) => p.PostId == up.PostId)
                 .LeftJoin<SysUser>((p, up, u) => up.UserId == u.UserId)
                 .OrderBy((p, up, u) => p.PostSort)
@@ -79,6 +79,20 @@ namespace RuoYi.System.Repositories
             if (string.IsNullOrEmpty(postCode)) return null!;
 
             return await this.GetFirstAsync(new SysPostDto { PostCode = postCode });
+        }
+
+
+        public async Task<List<SysPost>> GetListWithNewInstanceAsync(SysPostDto dto)
+        {
+            return await Repo.GetNewRepository().AsQueryable()
+                 //.Includes(t => t.SubTable)
+                 .OrderBy((p) => p.PostSort)
+                 .WhereIF(!string.IsNullOrEmpty(dto.Status), (p) => p.Status == dto.Status)
+                 .WhereIF(!string.IsNullOrEmpty(dto.PostCode), (p) => p.PostCode == dto.PostCode)
+                 .WhereIF(!string.IsNullOrEmpty(dto.PostName), (p) => p.PostName == dto.PostName)
+                 .WhereIF(!string.IsNullOrEmpty(dto.PostCodeLike), (p) => p.PostCode.Contains(dto.PostCodeLike))
+                 .WhereIF(!string.IsNullOrEmpty(dto.PostNameLike), (p) => p.PostName.Contains(dto.PostNameLike)).ToListAsync()
+             ;
         }
     }
 }

@@ -44,9 +44,6 @@ public partial interface ISqlSugarRepository<TEntity>
     /// </summary>
     ISugarQueryable<TEntity> Entities { get; }
 
-
-    ISugarQueryable<TEntity> EntitiesNew { get; }
-
     /// <summary>
     /// 数据库上下文
     /// </summary>
@@ -61,6 +58,12 @@ public partial interface ISqlSugarRepository<TEntity>
     /// 原生 Ado 对象
     /// </summary>
     IAdo Ado { get; }
+
+    /// <summary>
+    /// 获取新的数据库链接上下文生成的数据仓储
+    /// </summary>
+    /// <returns></returns>
+    SqlSugarRepository<TEntity> GetNewRepository();
 
     /// <summary>
     /// 获取总数
@@ -365,14 +368,14 @@ public partial interface ISqlSugarRepository<TEntity>
     /// 构建查询分析器
     /// </summary>
     /// <returns></returns>
-    ISugarQueryable<TEntity> AsQueryable(bool copyNew = false);
+    ISugarQueryable<TEntity> AsQueryable();
 
     /// <summary>
     /// 构建查询分析器
     /// </summary>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    ISugarQueryable<TEntity> AsQueryable(Expression<Func<TEntity, bool>> predicate, bool copyNew = false);
+    ISugarQueryable<TEntity> AsQueryable(Expression<Func<TEntity, bool>> predicate);
 
     /// <summary>
     /// 构建 sql 语句查询分析器
