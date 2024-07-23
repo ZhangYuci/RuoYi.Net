@@ -17,7 +17,7 @@ namespace RuoYi.Admin.Authorization
             LoginUser loginUser = tokenService.GetLoginUser(context.Request);
             if (loginUser != null)
             {
-                var isAuthenticated = CheckAuthorize(context);
+                var isAuthenticated = CheckAuthorize(context, loginUser);
                 if (isAuthenticated)
                 {
                     tokenService.VerifyToken(loginUser);
@@ -43,7 +43,7 @@ namespace RuoYi.Admin.Authorization
         /// <summary>
         /// 检查 Contoller的 AppAuthorizeAttribute 授权
         /// </summary>
-        private static bool CheckAuthorize(HttpContext httpContext)
+        private static bool CheckAuthorize(HttpContext httpContext, LoginUser loginUser)
         {
             // 获Contoller取权限特性
             var appAuthorizeAttribute = httpContext.GetMetadata<AppAuthorizeAttribute>();
@@ -57,7 +57,7 @@ namespace RuoYi.Admin.Authorization
             //}
 
             // 权限验证
-            if (!HasAnyPermi(appAuthorizeAttribute.Policies))
+            if (!HasAnyPermi(appAuthorizeAttribute.Policies, loginUser))
             {
                 return false;
             }
@@ -88,12 +88,12 @@ namespace RuoYi.Admin.Authorization
         /// <summary>
         /// 判断是否包含权限
         /// </summary>
-        private static bool HasAnyPermi(string[] permissions)
+        private static bool HasAnyPermi(string[] permissions, LoginUser loginUser)
         {
             if (permissions.IsEmpty()) return false;
 
-            var tokenService = App.GetService<TokenService>();
-            var loginUser = tokenService.GetLoginUser(App.HttpContext.Request);
+            //var tokenService = App.GetService<TokenService>();
+            //var loginUser = tokenService.GetLoginUser(App.HttpContext.Request);
             if (loginUser == null || loginUser.Permissions.IsEmpty())
             {
                 return false;

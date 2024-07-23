@@ -124,12 +124,12 @@ namespace RuoYi.System.Repositories
         /// <summary>
         /// 通过用户ID删除用户
         /// </summary>
-        public int DeleteUserById(long userId)
+        public async Task<int> DeleteUserById(long userId)
         {
-            return base.Updateable()
+            return await base.Updateable()
                  .SetColumns(u => u.DelFlag == DelFlag.Yes)
                  .Where(u => u.UserId == userId)
-                 .ExecuteCommand();
+                 .ExecuteCommandAsync();
         }
 
         /// <summary>
@@ -154,13 +154,13 @@ namespace RuoYi.System.Repositories
         }
 
         // 更新
-        public int UpdateUser(SysUserDto userDto)
+        public async Task<int> UpdateUser(SysUserDto userDto)
         {
             var user = userDto.Adapt<SysUser>();
-            return base.Updateable(user)
+            return await base.Updateable(user)
                 .IgnoreColumns(u => u.Password)
                 .Where(u => u.UserId == userDto.UserId)
-                .ExecuteCommand();
+                .ExecuteCommandAsync();
         }
 
         /// <summary>

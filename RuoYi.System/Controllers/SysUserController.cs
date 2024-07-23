@@ -96,7 +96,7 @@ namespace RuoYi.System.Controllers
             {
                 return AjaxResult.Error("新增用户'" + user.UserName + "'失败，邮箱账号已存在");
             }
-            var data = _sysUserService.InsertUser(user);
+            var data = await _sysUserService.InsertUser(user);
             return AjaxResult.Success(data);
         }
 
@@ -123,7 +123,7 @@ namespace RuoYi.System.Controllers
             {
                 return AjaxResult.Error("修改用户'" + user.UserName + "'失败，邮箱账号已存在");
             }
-            var data = _sysUserService.UpdateUser(user);
+            var data = await _sysUserService.UpdateUser(user);
             return AjaxResult.Success(data);
         }
 
@@ -154,7 +154,7 @@ namespace RuoYi.System.Controllers
         {
             _sysUserService.CheckUserAllowed(user);
             await _sysUserService.CheckUserDataScope(user.UserId ?? 0);
-            var data = _sysUserService.ResetPwd(user);
+            var data = await _sysUserService.ResetPwd(user);
             return AjaxResult.Success(data);
         }
 
@@ -198,7 +198,7 @@ namespace RuoYi.System.Controllers
         {
             var rIds = roleIds.SplitToList<long>();
             await _sysUserService.CheckUserDataScope(userId);
-            _sysUserService.InsertUserAuth(userId, rIds);
+            await _sysUserService.InsertUserAuth(userId, rIds);
             return AjaxResult.Success();
         }
 

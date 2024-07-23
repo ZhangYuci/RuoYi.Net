@@ -263,18 +263,18 @@ public class SysUserService : BaseService<SysUser, SysUserDto>, ITransient
     /// <param name="user">用户信息</param>
     /// <returns></returns>
     [Transactional]
-    public virtual bool InsertUser(SysUserDto user)
+    public virtual async Task<bool> InsertUser(SysUserDto user)
     {
         // 新增用户信息
         user.Password = SecurityUtils.EncryptPassword(user.Password!);
         user.DelFlag = DelFlag.No;
         user.CreateBy = SecurityUtils.GetUsername();
         user.CreateTime = DateTime.Now;
-        bool succees = _sysUserRepository.Insert(user);
+        bool succees = await _sysUserRepository.InsertAsync(user);
         // 新增用户岗位关联
-        InsertUserPost(user);
+        await InsertUserPost(user);
         // 新增用户与角色管理
-        InsertUserRole(user);
+        await InsertUserRole(user);
         return succees;
     }
 
@@ -290,18 +290,18 @@ public class SysUserService : BaseService<SysUser, SysUserDto>, ITransient
     /// 修改保存用户信息
     /// </summary>
     [Transactional]
-    public virtual int UpdateUser(SysUserDto user)
+    public virtual async Task<int> UpdateUser(SysUserDto user)
     {
         // 删除用户与角色关联
-        _sysUserRoleRepository.DeleteUserRoleByUserId(user.UserId ?? 0);
+        await _sysUserRoleRepository.DeleteUserRoleByUserId(user.UserId ?? 0);
         // 新增用户与角色管理
-        InsertUserRole(user);
+        await InsertUserRole(user);
         // 删除用户与岗位关联
-        _sysUserPostRepository.DeleteUserPostByUserId(user.UserId ?? 0);
+        await _sysUserPostRepository.DeleteUserPostByUserId(user.UserId ?? 0);
         // 新增用户与岗位管理
-        InsertUserPost(user);
+        await InsertUserPost(user);
 
-        return _sysUserRepository.UpdateUser(user);
+        return await _sysUserRepository.UpdateUser(user);
     }
 
     /// <summary>
@@ -309,10 +309,10 @@ public class SysUserService : BaseService<SysUser, SysUserDto>, ITransient
     /// </summary>
     /// <param name="userId">用户ID</param>
     /// <param name="roleIds">角色组</param>
-    public void InsertUserAuth(long userId, List<long> roleIds)
+    public async Task InsertUserAuth(long userId, List<long> roleIds)
     {
-        _sysUserRoleRepository.DeleteUserRoleByUserId(userId);
-        InsertUserRole(userId, roleIds);
+        await _sysUserRoleRepository.DeleteUserRoleByUserId(userId);
+        await InsertUserRole(userId, roleIds);
     }
 
     /// <summary>
@@ -344,9 +344,9 @@ public class SysUserService : BaseService<SysUser, SysUserDto>, ITransient
     /// 新增用户角色信息
     /// </summary>
     /// <param name="user"></param>
-    public void InsertUserRole(SysUserDto user)
+    public async Task InsertUserRole(SysUserDto user)
     {
-        this.InsertUserRole(user.UserId ?? 0, user.RoleIds);
+        await InsertUserRole(user.UserId ?? 0, user.RoleIds);
     }
 
     /// <summary>
@@ -363,10 +363,10 @@ public class SysUserService : BaseService<SysUser, SysUserDto>, ITransient
     /// <summary>
     /// 重置用户密码
     /// </summary>
-    public int ResetPwd(SysUserDto user)
+    public async Task<int> ResetPwd(SysUserDto user)
     {
         user.Password = SecurityUtils.EncryptPassword(user.Password!);
-        return _sysUserRepository.Update(user, true);
+        return await _sysUserRepository.UpdateAsync(user, true);
     }
 
     /// <summary>
@@ -384,7 +384,7 @@ public class SysUserService : BaseService<SysUser, SysUserDto>, ITransient
     /// </summary>
     /// <param name="userId">用户ID</param>
     /// <param name="roleIds">角色组</param>
-    public void InsertUserRole(long userId, List<long> roleIds)
+    public async Task InsertUserRole(long userId, List<long> roleIds)
     {
         if (roleIds.IsNotEmpty())
         {
@@ -397,7 +397,7 @@ public class SysUserService : BaseService<SysUser, SysUserDto>, ITransient
                 ur.RoleId = roleId;
                 list.Add(ur);
             }
-            _sysUserRoleRepository.Insert(list);
+            await _sysUserRoleRepository.InsertAsync(list);
         }
     }
 
@@ -405,7 +405,7 @@ public class SysUserService : BaseService<SysUser, SysUserDto>, ITransient
     /// 新增用户岗位信息
     /// </summary>
     /// <param name="user"></param>
-    public void InsertUserPost(SysUserDto user)
+    public async Task InsertUserPost(SysUserDto user)
     {
         if (user.PostIds.IsNotEmpty())
         {
@@ -418,7 +418,7 @@ public class SysUserService : BaseService<SysUser, SysUserDto>, ITransient
                 up.PostId = postId;
                 list.Add(up);
             }
-            _sysUserPostRepository.Insert(list);
+            await _sysUserPostRepository.InsertAsync(list);
         }
     }
 
@@ -427,13 +427,13 @@ public class SysUserService : BaseService<SysUser, SysUserDto>, ITransient
     /// </summary>
     /// <param name="userId">用户ID</param>
     [Transactional]
-    public virtual int DeleteUserByIdAsync(long userId)
+    public virtual async Task<int>   DeleteUserByIdAsync(long userId)
     {
         // 删除用户与角色关联
-        _sysUserRoleRepository.DeleteUserRoleByUserId(userId);
+        await _sysUserRoleRepository.DeleteUserRoleByUserId(userId);
         // 删除用户与岗位表
-        _sysUserPostRepository.DeleteUserPostByUserId(userId);
-        return _sysUserRepository.DeleteUserById(userId);
+        await _sysUserPostRepository.DeleteUserPostByUserId(userId);
+        return await _sysUserRepository.DeleteUserById(userId);
     }
 
     /// <summary>

@@ -79,6 +79,11 @@ namespace RuoYi.System
                 return;
             }
 
+            // ------------------- 计算接口执行时间
+            var timeOperation = Stopwatch.StartNew();
+            var resultContext = await next();
+            timeOperation.Stop();
+
             // 获取当前的用户
             LoginUser loginUser = SecurityUtils.GetLoginUser();
 
@@ -94,8 +99,6 @@ namespace RuoYi.System
 
             // 获取客户端 Ipv4 地址
             var remoteIPv4 = httpContext.GetRemoteIpAddressToIPv4();
-            // 远程查询操作地点
-            var operLocation = await AddressUtils.GetRealAddressByIPAsync(remoteIPv4);
 
             // 获取请求方式
             var httpMethod = httpContext.Request.Method;
@@ -103,56 +106,55 @@ namespace RuoYi.System
             // 获取请求的 Url 地址
             var requestUrl = httpRequest.GetRequestUrlAddress();
 
-            // ------------------- 计算接口执行时间
-            var timeOperation = Stopwatch.StartNew();
-            var resultContext = await next();
-            timeOperation.Stop();
-
             // 获取异常对象情况
             Exception e = resultContext.Exception;
 
-            // *========数据库日志=========*//
-            var operLog = new SysOperLog
-            {
-                Status = e != null ? BusinessStatus.FAIL.ToInt() : BusinessStatus.SUCCESS.ToInt(),
-                ErrorMsg = e != null ? StringUtils.Substring(e.Message, 0, 2000) : null,
 
-                // 请求的地址
-                OperIp = remoteIPv4,
-                OperUrl = requestUrl,
-                OperName = loginUser != null ? loginUser.UserName : null,
-                OperTime = DateTime.Now,
-
-                // 远程查询操作地点
-                OperLocation = operLocation,
-
-                // 设置方法名称
-                Method = methodFullName,
-                // 设置请求方式
-                RequestMethod = httpMethod,
-
-                // 处理设置注解上的参数
-                // 设置action动作
-                BusinessType = BusinessType.ToInt(),
-                // 设置标题
-                Title = Title,
-
-                // 设置操作人类别
-                OperatorType = OperatorType.ToInt(),
-
-                // 是否需要保存request，参数和值
-                OperParam = IsSaveRequestData ? GetOperParam(parameterValues, ExcludeParamNames) : null,
-
-                // 是否需要保存response，参数和值
-                JsonResult = IsSaveRequestData ? GetResponseData(resultContext) : null,
-
-                // 设置消耗时间
-                CostTime = timeOperation.ElapsedMilliseconds
-            };
-
-            // 保存数据库
             _ = Task.Factory.StartNew(async () =>
             {
+                // 远程查询操作地点
+                var operLocation = await AddressUtils.GetRealAddressByIPAsync(remoteIPv4);
+
+                // *========数据库日志=========*//
+                var operLog = new SysOperLog
+                {
+                    Status = e != null ? BusinessStatus.FAIL.ToInt() : BusinessStatus.SUCCESS.ToInt(),
+                    ErrorMsg = e != null ? StringUtils.Substring(e.Message, 0, 2000) : null,
+
+                    // 请求的地址
+                    OperIp = remoteIPv4,
+                    OperUrl = requestUrl,
+                    OperName = loginUser != null ? loginUser.UserName : null,
+                    OperTime = DateTime.Now,
+
+                    // 远程查询操作地点
+                    OperLocation = operLocation,
+
+                    // 设置方法名称
+                    Method = methodFullName,
+                    // 设置请求方式
+                    RequestMethod = httpMethod,
+
+                    // 处理设置注解上的参数
+                    // 设置action动作
+                    BusinessType = BusinessType.ToInt(),
+                    // 设置标题
+                    Title = Title,
+
+                    // 设置操作人类别
+                    OperatorType = OperatorType.ToInt(),
+
+                    // 是否需要保存request，参数和值
+                    OperParam = IsSaveRequestData ? GetOperParam(parameterValues, ExcludeParamNames) : null,
+
+                    // 是否需要保存response，参数和值
+                    JsonResult = IsSaveRequestData ? GetResponseData(resultContext) : null,
+
+                    // 设置消耗时间
+                    CostTime = timeOperation.ElapsedMilliseconds
+                };
+
+                // 保存数据库
                 var sysOperLogService = App.GetService<SysOperLogService>();
                 await sysOperLogService.InsertAsync(operLog);
             });

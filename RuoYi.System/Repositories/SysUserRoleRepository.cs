@@ -36,9 +36,9 @@ namespace RuoYi.System.Repositories
                 });
         }
 
-        public int DeleteUserRoleByUserId(long userId)
+        public async Task<int> DeleteUserRoleByUserId(long userId)
         {
-            return Repo.Delete(r => r.UserId == userId);
+            return await Repo.DeleteAsync(r => r.UserId == userId);
         }
 
         public int DeleteUserRole(List<long> userIds)
