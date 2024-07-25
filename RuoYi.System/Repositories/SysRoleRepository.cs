@@ -45,6 +45,7 @@ namespace RuoYi.System.Repositories
                 .WhereIF(!string.IsNullOrEmpty(dto.Status), (r) => r.Status == dto.Status)
                 .WhereIF(dto.Params.BeginTime != null, (r) => r.CreateTime >= dto.Params.BeginTime)
                 .WhereIF(dto.Params.EndTime != null, (r) => r.CreateTime <= dto.Params.EndTime)
+                .WhereIF(dto.UserId.HasValue, (r, ur, u) => u.UserId == dto.UserId)
                 .WhereIF(!string.IsNullOrEmpty(dto.UserName), (r, ur, u) => u.UserName == dto.UserName)
                 .WhereIF(!string.IsNullOrEmpty(dto.Params.DataScopeSql), dto.Params.DataScopeSql)
                 .Select((r) => new SysRoleDto

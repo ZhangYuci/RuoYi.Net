@@ -106,20 +106,20 @@ public class SysMenuRepository : BaseRepository<SysMenu, SysMenuDto>
     /// <summary>
     /// 查询菜单
     /// </summary>
-    public List<SysMenu> SelectMenuTreeAll()
+    public async Task<List<SysMenuDto>> SelectMenuTreeAll()
     {
         SysMenuDto dto = new SysMenuDto { Status = Status.Enabled, MenuTypes = new List<string> { "M", "C" } };
-        return this.GetList(dto);
+        return await this.GetDtoListAsync(dto);
     }
 
     /// <summary>
     /// 根据用户ID查询菜单
     /// </summary>
-    public List<SysMenu> SelectMenuTreeByUserId(long userId)
+    public async Task<List<SysMenuDto>> SelectMenuTreeByUserId(long userId)
     {
         SysMenuDto dto = new SysMenuDto { UserId = userId, Status = Status.Enabled, RoleStatus = Status.Enabled };
 
-        return this.GetList(dto);
+        return await this.GetDtoListAsync(dto);
     }
 
     public List<long> SelectMenuListByRoleId(long roleId, bool isMenuCheckStrictly)

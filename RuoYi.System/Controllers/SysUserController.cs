@@ -52,25 +52,22 @@ namespace RuoYi.System.Controllers
             await _sysUserService.CheckUserDataScope(userId);
             Task<List<SysRole>> roles = _sysRoleService.GetListWithNewInstanceAsync(new SysRoleDto());
             Task<List<SysPost>> posts = _sysPostService.GetListWithNewInstanceAsync(new SysPostDto());
-            var user = _sysUserService.GetDtoAsync(userId);
-            var postIds = _sysPostService.GetPostIdsListByUserId(userId.Value);
-            await Task.WhenAll(roles, roles, user, postIds);
+            await Task.WhenAll(roles, posts);
 
             AjaxResult ajax = AjaxResult.Success();
             ajax.Add("roles", SecurityUtils.IsAdmin(userId) ? roles : roles.Result.Where(r => !SecurityUtils.IsAdminRole(r.RoleId)));
             ajax.Add("posts", posts.Result);
 
-            ajax.Add(AjaxResult.DATA_TAG, user.Result);
-            ajax.Add("postIds", postIds.Result);
-            ajax.Add("roleIds", user.Result.Roles.Select(x => x.RoleId).ToList());
+            if (userId.HasValue && userId > 0)
+            {
+                var user = _sysUserService.GetDtoAsync(userId);
+                var postIds = _sysPostService.GetPostIdsListByUserId(userId.Value);
+                await Task.WhenAll(user, postIds);
 
-            //if (userId.HasValue && userId > 0)
-            //{
-            //    var user = await _sysUserService.GetDtoAsync(userId);
-            //    ajax.Add(AjaxResult.DATA_TAG, user);
-            //    ajax.Add("postIds", await _sysPostService.GetPostIdsListByUserId(userId.Value));
-            //    ajax.Add("roleIds", user.Roles.Select(x => x.RoleId).ToList());
-            //}
+                ajax.Add(AjaxResult.DATA_TAG, user.Result);
+                ajax.Add("postIds", postIds.Result);
+                ajax.Add("roleIds", user.Result.Roles.Select(x => x.RoleId).ToList());
+            }
 
             return ajax;
         }

@@ -104,18 +104,18 @@ public class SysMenuService : BaseService<SysMenu, SysMenuDto>, ITransient
     /// <summary>
     /// 根据用户ID查询菜单
     /// </summary>
-    public List<SysMenu> SelectMenuTreeByUserId(long userId)
+    public async Task<List<SysMenu>> SelectMenuTreeByUserId(long userId)
     {
-        List<SysMenu> menus = null;
+        List<SysMenuDto> menus = null;
         if (SecurityUtils.IsAdmin(userId))
         {
-            menus = _sysMenuRepository.SelectMenuTreeAll();
+            menus = await _sysMenuRepository.SelectMenuTreeAll();
         }
         else
         {
-            menus = _sysMenuRepository.SelectMenuTreeByUserId(userId);
+            menus = await _sysMenuRepository.SelectMenuTreeByUserId(userId);
         }
-        return GetChildPerms(menus, 0);
+        return GetChildPerms(menus.Adapt<List<SysMenu>>(), 0);
     }
 
     /// <summary>

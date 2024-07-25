@@ -91,10 +91,10 @@ namespace RuoYi.Admin
         /// 获取路由信息
         /// </summary>
         [HttpGet("/getRouters")]
-        public AjaxResult GetRouters()
+        public async Task<AjaxResult> GetRouters()
         {
             long userId = SecurityUtils.GetUserId();
-            List<SysMenu> menus = _sysMenuService.SelectMenuTreeByUserId(userId);
+            List<SysMenu> menus = await _sysMenuService.SelectMenuTreeByUserId(userId);
             var treeMenus = _sysMenuService.BuildMenus(menus);
             return AjaxResult.Success(treeMenus);
         }

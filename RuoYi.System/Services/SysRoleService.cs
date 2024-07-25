@@ -67,9 +67,10 @@ public class SysRoleService : BaseService<SysRole, SysRoleDto>, ITransient
 
     public async Task<List<string>> GetRolePermissionByUserId(long userId)
     {
-        List<SysRole> perms = await _sysRoleRepository.GetListAsync(new SysRoleDto { UserId = userId });
+        List<SysRoleDto> perms = await _sysRoleRepository.GetDtoListAsync(new SysRoleDto { UserId = userId });
+
         List<string> permsSet = new List<string>();
-        foreach (SysRole perm in perms)
+        foreach (SysRoleDto perm in perms)
         {
             if (perm != null)
             {
