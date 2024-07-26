@@ -31,6 +31,7 @@ public class SysDeptRepository : BaseRepository<SysDept, SysDeptDto>
             .Where((d) => d.DelFlag == DelFlag.No)
             .WhereIF(dto.DeptId > 0, (d) => d.DeptId == dto.DeptId)
             .WhereIF(dto.ParentId > 0, (d) => d.ParentId == dto.ParentId)
+            .WhereIF(dto.RoleId > 0, (d, rd) => rd.RoleId == dto.RoleId)
             .WhereIF(dto.ParentIds!.IsNotEmpty(), (d) => dto.ParentIds!.Contains(d.ParentId))
             .WhereIF(!string.IsNullOrEmpty(dto.DelFlag), (d) => d.DelFlag == dto.DelFlag)
             .WhereIF(!string.IsNullOrEmpty(dto.Status), (d) => d.Status == dto.Status)
@@ -45,7 +46,7 @@ public class SysDeptRepository : BaseRepository<SysDept, SysDeptDto>
             {
                 DeptId = d.DeptId,
             },
-            true);
+            true).Distinct();
     }
 
     // dtos 关联表数据
