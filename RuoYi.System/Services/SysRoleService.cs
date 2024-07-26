@@ -91,10 +91,13 @@ public class SysRoleService : BaseService<SysRole, SysRoleDto>, ITransient
     {
         var dto = new SysRoleDto { DelFlag = DelFlag.No };
         var roles = await this.GetDtoListAsync(dto);
+        dto.UserId = userId;
+        var userRoles = await this.GetDtoListAsync(dto);
+
 
         foreach (var role in roles)
         {
-            if (role.UserId.Equals(userId))
+            if (userRoles.Any(ur => ur.RoleId == role.RoleId))
             {
                 role.Flag = true;
             }

@@ -21,7 +21,7 @@ namespace RuoYi.System.Repositories
         {
             //return this.UserQueryable(dto);
             return Repo.AsQueryable()
-                //.Includes((u) => u.Dept)
+                .Includes((u) => u.Dept)
                 .LeftJoin<SysDept>((u, d) => u.DeptId == d.DeptId)
                 .Where(u => u.DelFlag == DelFlag.No)
                 .WhereIF(dto.UserId > 0, u => u.UserId == dto.UserId)
@@ -216,6 +216,7 @@ namespace RuoYi.System.Repositories
                 DeptId = u.DeptId,
                 NickName = u.NickName,
                 Email = u.Email,
+                Phonenumber = u.Phonenumber,
                 Status = u.Status,
                 CreateTime = u.CreateTime,
                 Remark = u.Remark

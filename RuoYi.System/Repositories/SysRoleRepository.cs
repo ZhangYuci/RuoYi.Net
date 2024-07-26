@@ -48,13 +48,12 @@ namespace RuoYi.System.Repositories
                 .WhereIF(dto.UserId.HasValue, (r, ur, u) => u.UserId == dto.UserId)
                 .WhereIF(!string.IsNullOrEmpty(dto.UserName), (r, ur, u) => u.UserName == dto.UserName)
                 .WhereIF(!string.IsNullOrEmpty(dto.Params.DataScopeSql), dto.Params.DataScopeSql)
-                .Select((r) => new SysRoleDto
+                .Select((r, ur, u, d) => new SysRoleDto
                 {
                     CreateBy = r.CreateBy,
                     CreateTime = r.CreateTime,
                     UpdateBy = r.UpdateBy,
                     UpdateTime = r.UpdateTime,
-
                     RoleId = r.RoleId,
                     RoleName = r.RoleName,
                     RoleKey = r.RoleKey,
