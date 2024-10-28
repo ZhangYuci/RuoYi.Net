@@ -19,6 +19,7 @@
 	</ItemGroup>	
 
 	<ItemGroup>
+	  <ProjectReference Include="..\RuoYi.Business\RuoYi.Business.csproj" />
 	  <ProjectReference Include="..\RuoYi.Common\RuoYi.Common.csproj" />
 	  <ProjectReference Include="..\RuoYi.Data\RuoYi.Data.csproj" />
 	  <ProjectReference Include="..\RuoYi.Framework\RuoYi.Framework.csproj" />
