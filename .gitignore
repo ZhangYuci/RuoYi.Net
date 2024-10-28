@@ -398,3 +398,4 @@ FodyWeavers.xsd
 *.sln.iml
 /RuoYi.Admin/Resources
 /ruoyi-ui/dist.zip
+/RuoYi.Admin/appsettings.json
