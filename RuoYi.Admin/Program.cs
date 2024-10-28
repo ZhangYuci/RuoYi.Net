@@ -1,4 +1,6 @@
 using AspectCore.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using System.Net;
 
 internal class Program
 {
@@ -9,6 +11,8 @@ internal class Program
         {
             // Set properties and call methods on options
             // serverOptions.Limits.MaxRequestBodySize = 50 * 1024 * 1024;
+            //serverOptions.Listen(IPAddress.IPv6Any,5000); // 监听所有 IPv6 地址
+            //serverOptions.Listen(IPAddress.Any, 5000);      // 监听所有 IPv4 地址
             serverOptions.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(3);
             serverOptions.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(1);
         });

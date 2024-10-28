@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RuoYi.Generator", "RuoYi.Ge
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RuoYi.Quartz", "RuoYi.Quartz\RuoYi.Quartz.csproj", "{21F845AA-320A-43B0-B5A5-5929445A2C64}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RuoYi.Service", "RuoYi.Service\RuoYi.Service.csproj", "{255D96E3-BA48-46D6-8FA3-CA107E2CCC72}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{21F845AA-320A-43B0-B5A5-5929445A2C64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21F845AA-320A-43B0-B5A5-5929445A2C64}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{21F845AA-320A-43B0-B5A5-5929445A2C64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{255D96E3-BA48-46D6-8FA3-CA107E2CCC72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{255D96E3-BA48-46D6-8FA3-CA107E2CCC72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{255D96E3-BA48-46D6-8FA3-CA107E2CCC72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{255D96E3-BA48-46D6-8FA3-CA107E2CCC72}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

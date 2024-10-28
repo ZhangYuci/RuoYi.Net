@@ -88,7 +88,7 @@ public class SysDeptRepository : BaseRepository<SysDept, SysDeptDto>
     /// <param name="deptId">部门ID</param>
     public async Task<int> CountNormalChildrenDeptByIdAsync(long deptId)
     {
-        return await base.CountAsync(d => d.DelFlag == DelFlag.No && d.Status == "0" && SqlFunc.SplitIn(d.Ancestors, deptId.ToString()));
+        return await base.CountAsync(d => d.DelFlag == DelFlag.No && d.Status == Status.Enabled && SqlFunc.SplitIn(d.Ancestors, deptId.ToString()));
     }
 
     /// <summary>

@@ -16,7 +16,7 @@ namespace RuoYi.Admin
         private readonly SystemService _systemService;
         private readonly RuoYi.System.Slave.Services.SysUserService _slaveSysUserService;
 
-        public SampleController(ILogger<SampleController> logger, SystemService systemService, 
+        public SampleController(ILogger<SampleController> logger, SystemService systemService,
             System.Slave.Services.SysUserService slaveSysUserService)
         {
             _logger = logger;
