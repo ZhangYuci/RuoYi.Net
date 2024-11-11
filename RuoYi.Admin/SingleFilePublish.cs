@@ -19,7 +19,8 @@ namespace RuoYi.Admin
                 "RuoYi.Data",
                 "RuoYi.Admin",
                 "RuoYi.Generator",
-                "RuoYi.System"
+                "RuoYi.System",
+                "RuoYi.Business"
             };
         }
     }
