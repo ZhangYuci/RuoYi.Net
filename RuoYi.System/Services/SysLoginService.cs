@@ -69,16 +69,19 @@ public class SysLoginService : ITransient
         if (user == null)
         {
             _logger.LogInformation($"登录用户：{username} 不存在.");
+            await _sysLogininforService.AddAsync(username, Constants.LOGIN_FAIL, MessageConstants.User_Passwrod_Not_Match);
             throw new ServiceException(MessageConstants.User_Passwrod_Not_Match);
         }
         else if (UserStatus.DELETED.GetValue().Equals(user.DelFlag))
         {
             _logger.LogInformation($"登录用户：{username} 已被删除.");
+            await _sysLogininforService.AddAsync(username, Constants.LOGIN_FAIL, MessageConstants.User_Deleted);
             throw new ServiceException(MessageConstants.User_Deleted);
         }
         else if (UserStatus.DISABLE.GetValue().Equals(user.Status))
         {
             _logger.LogInformation($"登录用户：{username} 已被停用.");
+            await _sysLogininforService.AddAsync(username, Constants.LOGIN_FAIL, MessageConstants.User_Blocked);
             throw new ServiceException(MessageConstants.User_Blocked);
         }
 
