@@ -120,8 +120,9 @@ namespace RuoYi.System.Controllers
         [RuoYi.System.Log(Title = "系统访问记录", BusinessType = BusinessType.EXPORT)]
         public async Task Export(SysLogininforDto dto)
         {
-            var list = await _sysLogininforService.GetDtoListAsync(dto);
-            await ExcelUtils.ExportAsync(App.HttpContext.Response, list);
+            var list = await _sysLogininforService.GetListAsync(dto);
+            var listDto = _sysLogininforService.ToDtos(list);
+            await ExcelUtils.ExportAsync(App.HttpContext.Response, listDto);
         }
     }
 }

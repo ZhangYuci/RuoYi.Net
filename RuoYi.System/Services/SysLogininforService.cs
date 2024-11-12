@@ -37,6 +37,17 @@ public class SysLogininforService : BaseService<SysLogininfor, SysLogininforDto>
         return dto;
     }
 
+    public List<SysLogininforDto> ToDtos(List<SysLogininfor> entities)
+    {
+        var dtos = entities.Adapt<List<SysLogininforDto>>();
+        foreach (var item in dtos)
+        {
+            item.StatusDesc = item.Status switch { "1" => "失败", "0" => "成功", _ => "未知" };
+        }
+
+        return dtos;
+    }
+
     /// <summary>
     /// 记录登录信息
     /// </summary>
