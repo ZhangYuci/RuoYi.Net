@@ -52,37 +52,39 @@ const actions = {
   },
   async initServerThemeSettings({ commit }) {
     try {
-      const { msg: skinName } = await getConfigKey("sys.index.skinName");
-      const { msg: sideTheme } = await getConfigKey("sys.index.sideTheme");
+      if (!storageSetting.theme) {
+        const { msg: skinName } = await getConfigKey("sys.index.skinName");
+        const { msg: sideTheme } = await getConfigKey("sys.index.sideTheme");
 
-      //蓝色 skin-blue、绿色 skin-green、紫色 skin-purple、红色 skin-red、黄色 skin-yellow
-      let color = "#409EFF";
-      if (skinName && skinName.startsWith("skin")) {
-        switch (skinName) {
-          case "skin-blue":
-            color = "#409EFF";
-            break;
-          case "skin-green":
-            color = "#67C23A";
-            break;
-          case "skin-purple":
-            color = "#7928CB";
-            break;
-          case "skin-red":
-            color = "#F56C6C";
-            break;
-          case "skin-yellow":
-            color = "#E6A23C";
-            break;
-          default:
-            color = "#409EFF";
-            break;
+        //蓝色 skin-blue、绿色 skin-green、紫色 skin-purple、红色 skin-red、黄色 skin-yellow
+        let color = "#409EFF";
+        if (skinName && skinName.startsWith("skin")) {
+          switch (skinName) {
+            case "skin-blue":
+              color = "#409EFF";
+              break;
+            case "skin-green":
+              color = "#67C23A";
+              break;
+            case "skin-purple":
+              color = "#6959CD";
+              break;
+            case "skin-red":
+              color = "#F56C6C";
+              break;
+            case "skin-yellow":
+              color = "#E6A23C";
+              break;
+            default:
+              color = "#409EFF";
+              break;
+          }
+        } else {
+          color = skinName;
         }
-      } else {
-        color = skinName;
+        commit("CHANGE_SETTING", { key: "theme", value: color });
+        commit("CHANGE_SETTING", { key: "sideTheme", value: sideTheme });
       }
-      commit("CHANGE_SETTING", { key: "theme", value: color });
-      commit("CHANGE_SETTING", { key: "sideTheme", value: sideTheme });
     } catch {
       console.error("初始化服务端主题失败");
     }
