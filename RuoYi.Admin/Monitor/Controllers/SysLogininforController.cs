@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using RuoYi.Common.Enums;
 using RuoYi.Common.Utils;
+using RuoYi.Data;
 using RuoYi.Data.Dtos;
 using RuoYi.System.Services;
 using SqlSugar;
@@ -17,12 +18,15 @@ namespace RuoYi.System.Controllers
     {
         private readonly ILogger<SysLogininforController> _logger;
         private readonly SysLogininforService _sysLogininforService;
-                
+        private readonly SysPasswordService _sysPasswordService;
+
         public SysLogininforController(ILogger<SysLogininforController> logger,
-            SysLogininforService sysLogininforService)
+            SysLogininforService sysLogininforService,
+            SysPasswordService sysPasswordService)
         {
             _logger = logger;
             _sysLogininforService = sysLogininforService;
+            _sysPasswordService = sysPasswordService;
         }
 
         /// <summary>
@@ -123,6 +127,19 @@ namespace RuoYi.System.Controllers
             var list = await _sysLogininforService.GetListAsync(dto);
             var listDto = _sysLogininforService.ToDtos(list);
             await ExcelUtils.ExportAsync(App.HttpContext.Response, listDto);
+        }
+
+        /// <summary>
+        /// 账户解锁
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        [HttpGet("unlock/{userName}")]
+        [AppAuthorize("monitor:logininfor:unlock")]
+        public AjaxResult Unlock(string userName)
+        {
+            _sysPasswordService.ClearLoginRecordCache(userName);
+            return AjaxResult.Success();
         }
     }
 }
