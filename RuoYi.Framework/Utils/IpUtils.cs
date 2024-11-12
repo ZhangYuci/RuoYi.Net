@@ -24,6 +24,7 @@ namespace RuoYi.Framework.Utils
             {
                 byte[] ipBytes = ip.GetAddressBytes();
                 if (ipBytes[0] == 10) return true;
+                if (ipBytes[0] == 127) return true;
                 if (ipBytes[0] == 172 && ipBytes[1] >= 16 && ipBytes[1] <= 31) return true;
                 if (ipBytes[0] == 192 && ipBytes[1] == 168) return true;
             }
