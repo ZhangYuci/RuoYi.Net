@@ -21,7 +21,7 @@ namespace RuoYi.Framework.RateLimit
                 services.AddRateLimiter(options =>
                 {
                     // 全局 并发限流
-                    //options.AddPolicy<string, MemoryGlobalRateLimiterPolicy>(LimitType.Default);
+                    options.AddPolicy<string, MemoryGlobalRateLimiterPolicy>(LimitType.Default);
 
                     // ip 并发限流
                     options.AddPolicy<string, MemoryIpRateLimiterPolicy>(LimitType.IP);
