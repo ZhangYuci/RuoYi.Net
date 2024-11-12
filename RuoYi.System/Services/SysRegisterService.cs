@@ -74,10 +74,7 @@ public class SysRegisterService : ITransient
             else
             {
                 // 记录注册成功
-                _ = Task.Factory.StartNew(async () =>
-                {
-                    await _sysLogininforService.AddAsync(username, Constants.LOGIN_SUCCESS, MessageConstants.User_Register_Success);
-                });
+                await _sysLogininforService.AddAsync(username, Constants.LOGIN_SUCCESS, MessageConstants.User_Register_Success);
             }
         }
         return msg;

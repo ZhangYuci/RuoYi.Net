@@ -23,7 +23,7 @@ namespace RuoYi.Common.Utils
             }
 
             var ruoYiConfig = RyApp.RuoYiConfig;
-            if (ruoYiConfig.AddressEnabled)
+            if (ruoYiConfig.AddressEnabled && !string.IsNullOrEmpty(ip))
             {
                 try
                 {

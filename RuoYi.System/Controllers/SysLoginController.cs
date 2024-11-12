@@ -51,7 +51,7 @@ namespace RuoYi.Admin
         /// 退出
         /// </summary>
         [HttpPost("/logout")]
-        public AjaxResult Logout()
+        public async Task<AjaxResult> Logout()
         {
             LoginUser loginUser = _tokenService.GetLoginUser(App.HttpContext.Request);
             if (loginUser != null)
@@ -60,10 +60,7 @@ namespace RuoYi.Admin
                 // 删除用户缓存记录
                 _tokenService.DelLoginUser(loginUser.Token);
                 // 记录用户退出日志
-                _ = Task.Factory.StartNew(async () =>
-                {
-                    await _sysLogininforService.AddAsync(userName, Constants.LOGOUT, "退出成功");
-                });
+                await _sysLogininforService.AddAsync(userName, Constants.LOGOUT, "退出成功");
             }
             return AjaxResult.Success("退出成功");
         }

@@ -29,7 +29,7 @@ public class SysPasswordService : ITransient
         return CacheConstants.PWD_ERR_CNT_KEY + username;
     }
 
-    public void Validate(string username, string password, SysUserDto user)
+    public async Task Validate(string username, string password, SysUserDto user)
     {
         var userConfig = RyApp.UserConfig;
         var maxRetryCount = userConfig.MaxRetryCount;
@@ -40,10 +40,7 @@ public class SysPasswordService : ITransient
         if (retryCount >= maxRetryCount)
         {
             var retryLimitExceedMsg = string.Format(MessageConstants.User_Password_Retry_Limit_Exceed, maxRetryCount, lockTime);
-            Task.Factory.StartNew(async () =>
-            {
-                await _sysLogininforService.AddAsync(username, Constants.LOGIN_FAIL, retryLimitExceedMsg);
-            });
+            await _sysLogininforService.AddAsync(username, Constants.LOGIN_FAIL, retryLimitExceedMsg);
 
             throw new ServiceException(retryLimitExceedMsg);
         }
@@ -54,11 +51,9 @@ public class SysPasswordService : ITransient
 
             var retryLimitCountMsg = string.Format(MessageConstants.User_Password_Retry_Limit_Count, retryCount);
             var notMatchMsg = MessageConstants.User_Passwrod_Not_Match;
-            Task.Factory.StartNew(async () =>
-            {
-                await _sysLogininforService.AddAsync(username, Constants.LOGIN_FAIL, retryLimitCountMsg);
-                await _sysLogininforService.AddAsync(username, Constants.LOGIN_FAIL, notMatchMsg);
-            });
+
+            await _sysLogininforService.AddAsync(username, Constants.LOGIN_FAIL, retryLimitCountMsg);
+            await _sysLogininforService.AddAsync(username, Constants.LOGIN_FAIL, notMatchMsg);
 
             _cache.SetString(GetCacheKey(username), retryCount.ToString(), lockTime);
 

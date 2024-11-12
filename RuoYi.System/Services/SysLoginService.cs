@@ -47,12 +47,12 @@ public class SysLoginService : ITransient
     public async Task<string> LoginAsync(string username, string password, string code, string uuid)
     {
         // 验证码校验
-        ValidateCaptcha(username, code, uuid);
+        await ValidateCaptcha(username, code, uuid);
         // 登录前置校验
-        LoginPreCheck(username, password);
+        await LoginPreCheck(username, password);
         // 用户验证
         var userDto = await _sysUserService.GetDtoByUsernameAsync(username);
-        CheckLoginUser(username, password, userDto);
+        await CheckLoginUser(username, password, userDto);
 
         // 记录登录成功
         await _sysLogininforService.AddAsync(username, Constants.LOGIN_SUCCESS, MessageConstants.User_Login_Success);
@@ -64,7 +64,7 @@ public class SysLoginService : ITransient
         return await _tokenService.CreateToken(loginUser);
     }
 
-    private void CheckLoginUser(string username, string password, SysUserDto user)
+    private async Task CheckLoginUser(string username, string password, SysUserDto user)
     {
         if (user == null)
         {
@@ -83,7 +83,7 @@ public class SysLoginService : ITransient
         }
 
         // 密码验证
-        _sysPasswordService.Validate(username, password, user);
+        await _sysPasswordService.Validate(username, password, user);
     }
 
     /// <summary>
@@ -92,7 +92,7 @@ public class SysLoginService : ITransient
     /// <param name="username">用户名</param>
     /// <param name="code">验证码</param>
     /// <param name="uuid">唯一标识</param>
-    private void ValidateCaptcha(string username, string code, string uuid)
+    private async Task ValidateCaptcha(string username, string code, string uuid)
     {
         bool captchaEnabled = _sysConfigService.IsCaptchaEnabled();
         if (captchaEnabled)
@@ -101,10 +101,7 @@ public class SysLoginService : ITransient
             var isValidCaptcha = _captcha.Validate(uuid, code, true, true);
             if (!isValidCaptcha)
             {
-                Task.Factory.StartNew(async () =>
-                {
-                    await _sysLogininforService.AddAsync(username, Constants.LOGIN_FAIL, MessageConstants.Captcha_Invalid);
-                });
+                await _sysLogininforService.AddAsync(username, Constants.LOGIN_FAIL, MessageConstants.Captcha_Invalid);
                 throw new ServiceException(MessageConstants.Captcha_Invalid);
             }
         }
@@ -115,43 +112,31 @@ public class SysLoginService : ITransient
     /// </summary>
     /// <param name="username">用户名</param>
     /// <param name="password">用户密码</param>
-    private void LoginPreCheck(string username, string password)
+    private async Task LoginPreCheck(string username, string password)
     {
         // 用户名或密码为空 错误
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
-            Task.Factory.StartNew(async () =>
-            {
-                await _sysLogininforService.AddAsync(username, Constants.LOGIN_FAIL, MessageConstants.Required);
-            });
+            await _sysLogininforService.AddAsync(username, Constants.LOGIN_FAIL, MessageConstants.Required);
             throw new ServiceException(MessageConstants.Required);
         }
         // 密码如果不在指定范围内 错误
         if (password.Length < UserConstants.PASSWORD_MIN_LENGTH || password.Length > UserConstants.PASSWORD_MAX_LENGTH)
         {
-            Task.Factory.StartNew(async () =>
-            {
-                await _sysLogininforService.AddAsync(username, Constants.LOGIN_FAIL, MessageConstants.User_Passwrod_Not_Match);
-            });
+            await _sysLogininforService.AddAsync(username, Constants.LOGIN_FAIL, MessageConstants.User_Passwrod_Not_Match);
             throw new ServiceException(MessageConstants.User_Passwrod_Not_Match);
         }
         // 用户名不在指定范围内 错误
         if (username.Length < UserConstants.USERNAME_MIN_LENGTH || username.Length > UserConstants.USERNAME_MAX_LENGTH)
         {
-            Task.Factory.StartNew(async () =>
-            {
-                await _sysLogininforService.AddAsync(username, Constants.LOGIN_FAIL, MessageConstants.User_Passwrod_Not_Match);
-            });
+            await _sysLogininforService.AddAsync(username, Constants.LOGIN_FAIL, MessageConstants.User_Passwrod_Not_Match);
             throw new ServiceException(MessageConstants.User_Passwrod_Not_Match);
         }
         // IP黑名单校验
         string? blackStr = _cache.GetString("sys.login.blackIPList");
         if (IpUtils.IsMatchedIp(blackStr, App.HttpContext.GetRemoteIpAddressToIPv4()))
         {
-            Task.Factory.StartNew(async () =>
-            {
-                await _sysLogininforService.AddAsync(username, Constants.LOGIN_FAIL, MessageConstants.Login_Blocked);
-            });
+            await _sysLogininforService.AddAsync(username, Constants.LOGIN_FAIL, MessageConstants.Login_Blocked);
             throw new ServiceException(MessageConstants.Login_Blocked);
         }
     }
