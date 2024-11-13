@@ -84,23 +84,25 @@ public class ServerService : ITransient
             Usage = NO_DATA
         };
 
+        DriveInfo[] drives = DriveInfo.GetDrives();
         // 磁盘相关信息
-        var sysFiles = _hardwareInfo.DriveList.Select(d =>
+        var sysFiles = drives.Where(x=>x.IsReady).Select(d =>
         {
-            var total = d.Size;
-            var free = GetDriveFreeSpace(d);
+            var total = d.TotalSize;
+            var free = d.TotalFreeSpace;//GetDriveFreeSpace(d);
             var used = total - free;
             return new SysFile
             {
                 DirName = d.Name,
-                SysTypeName = d.Description,
-                TypeName = GetFileSystem(d.PartitionList),
-                Total = ConvertFileSize(total),
-                Free = ConvertFileSize(free),
-                Used = ConvertFileSize(used),
+                SysTypeName = d.DriveFormat,//d.Description,
+                TypeName = d.DriveType.ToString(),//GetFileSystem(d.PartitionList),
+                Total = ConvertFileSize((ulong)total),
+                Free = ConvertFileSize((ulong)free),
+                Used = ConvertFileSize((ulong)used),
                 Usage = MathUtils.Round(Convert.ToDecimal(used) / total, 2) * 100
             };
         }).ToList();
+
 
         return new Server
         {
