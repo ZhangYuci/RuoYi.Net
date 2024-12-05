@@ -2,6 +2,7 @@
 using RuoYi.Data.Models;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 namespace RuoYi.System.Services;
 
@@ -19,23 +20,34 @@ public class ServerService : ITransient
 
     public Server GetServerInfo()
     {
-        _hardwareInfo.RefreshCPUList();
-        _hardwareInfo.RefreshMemoryList();
+        //_hardwareInfo.RefreshCPUList();
+        //_hardwareInfo.RefreshMemoryList();
         _hardwareInfo.RefreshMemoryStatus();
-        _hardwareInfo.RefreshDriveList();
+        //_hardwareInfo.RefreshDriveList();
 
         // cpu
-        var cpuUsed = Convert.ToDouble(_hardwareInfo.CpuList.FirstOrDefault()?.PercentProcessorTime ?? 0);
-        var cpuFree = MathUtils.Round((1 - cpuUsed / 100) * 100, 0);
-        var cpu = new Cpu
+        //var cpuUsed = Convert.ToDouble(_hardwareInfo.CpuList.FirstOrDefault()?.PercentProcessorTime ?? 0);
+        //var cpuFree = MathUtils.Round((1 - cpuUsed / 100) * 100, 0);
+        //var cpu = new Cpu
+        //{
+        //    CpuNum = Convert.ToInt32(_hardwareInfo.CpuList.FirstOrDefault()?.NumberOfCores ?? 0),
+        //    Total = cpuUsed,
+        //    Free = cpuFree,
+        //    // 其他值暂无法得到
+        //    Used = NO_DATA,
+        //    Sys = NO_DATA
+        //};
+
+        // cpu
+        Cpu cpu = new();
+        if (OperatingSystem.IsWindows())
         {
-            CpuNum = Convert.ToInt32(_hardwareInfo.CpuList.FirstOrDefault()?.NumberOfCores ?? 0),
-            Total = cpuUsed,
-            Free = cpuFree,
-            // 其他值暂无法得到
-            Used = NO_DATA,
-            Sys = NO_DATA
-        };
+            cpu = GetCpuUsageWindows();
+        }
+        else if (OperatingSystem.IsLinux())
+        {
+            cpu = GetCpuUsageLinux();
+        }
 
         // 内存
         var memTotal = _hardwareInfo.MemoryStatus.TotalPhysical;
@@ -54,7 +66,7 @@ public class ServerService : ITransient
             ComputerName = Environment.MachineName,
             ComputerIp = IpUtils.GetHostIpAddr(),
             UserDir = Environment.CurrentDirectory,
-            OsName = RuntimeInformation.OSDescription + Environment.OSVersion.ToString(),
+            OsName = RuntimeInformation.OSDescription,
             OsArch = RuntimeInformation.OSArchitecture.ToString()
         };
 
@@ -84,18 +96,35 @@ public class ServerService : ITransient
             Usage = NO_DATA
         };
 
-        DriveInfo[] drives = DriveInfo.GetDrives();
         // 磁盘相关信息
+        DriveInfo[] drives = DriveInfo.GetDrives();
+        
         var sysFiles = drives.Where(x=>x.IsReady).Select(d =>
         {
             var total = d.TotalSize;
             var free = d.TotalFreeSpace;//GetDriveFreeSpace(d);
             var used = total - free;
+
+            string driveFormat = d.DriveFormat;
+            string driveType = d.DriveType.ToString();
+
+            // 处理不同平台的差异
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                // 在 Linux 和 macOS 上，DriveFormat 可能不准确
+                driveFormat = "Unknown";
+                // DriveType 可能也需要调整
+                if (d.DriveType == DriveType.Unknown)
+                {
+                    driveType = "Mount Point";
+                }
+            }
+
             return new SysFile
             {
                 DirName = d.Name,
-                SysTypeName = d.DriveFormat,//d.Description,
-                TypeName = d.DriveType.ToString(),//GetFileSystem(d.PartitionList),
+                SysTypeName = driveFormat,//d.Description,
+                TypeName = driveType.ToString(),//GetFileSystem(d.PartitionList),
                 Total = ConvertFileSize((ulong)total),
                 Free = ConvertFileSize((ulong)free),
                 Used = ConvertFileSize((ulong)used),
@@ -258,5 +287,101 @@ public class ServerService : ITransient
             freeSpace += partition.VolumeList.Sum(v => (long)v.FreeSpace);
         }
         return Convert.ToUInt64(freeSpace);
+    }
+
+    [SupportedOSPlatform("windows")]
+    private Cpu GetCpuUsageWindows()
+    {
+        int processorCount = Environment.ProcessorCount;
+
+        // 创建性能计数器实例以获取总的CPU时间
+        using PerformanceCounter cpuCounter = new("Processor", "% Processor Time", "_Total");
+        using PerformanceCounter userCounter = new("Processor", "% User Time", "_Total");
+        using PerformanceCounter systemCounter = new("Processor", "% Privileged Time", "_Total");
+        using PerformanceCounter idleCounter = new("Processor", "% Idle Time", "_Total");
+        cpuCounter.NextValue(); // 第一次调用NextValue()会返回0，需要第二次调用来获取实际值
+        userCounter.NextValue();
+        systemCounter.NextValue();
+        idleCounter.NextValue();
+
+        // 等待一段时间以获取有效的性能计数值
+        Thread.Sleep(1000);
+
+        double cpuUsage = Math.Round((double)cpuCounter.NextValue(), 2);
+        double userUsage = Math.Round((double)userCounter.NextValue(), 2);
+        double systemUsage = Math.Round((double)systemCounter.NextValue(), 2);
+        double idleUsage = Math.Round((double)idleCounter.NextValue(), 2);
+
+        return new Cpu
+        {
+            CpuNum = processorCount,
+            Total = cpuUsage,
+            Sys = systemUsage,
+            Used = userUsage,
+            Free = idleUsage
+        };
+    }
+
+    [SupportedOSPlatform("linux")]
+    private Cpu GetCpuUsageLinux()
+    {
+        int processorCount = Environment.ProcessorCount;
+
+        string[] lines = File.ReadAllLines("/proc/stat");
+        string? cpuLine = lines.FirstOrDefault(line => line.StartsWith("cpu "));
+
+        if (string.IsNullOrEmpty(cpuLine)) return new Cpu();
+        
+
+        string[] cpuValues = cpuLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        long user = long.Parse(cpuValues[1]);
+        long nice = long.Parse(cpuValues[2]);
+        long system = long.Parse(cpuValues[3]);
+        long idle = long.Parse(cpuValues[4]);
+        long iowait = long.Parse(cpuValues[5]);
+        long irq = long.Parse(cpuValues[6]);
+        long softirq = long.Parse(cpuValues[7]);
+        long steal = long.Parse(cpuValues[8]);
+
+        long total = user + nice + system + idle + iowait + irq + softirq + steal;
+
+        // 等待一段时间以获取下一个样本
+        Thread.Sleep(1000);
+
+        // 再次读取/proc/stat文件
+        lines = File.ReadAllLines("/proc/stat");
+        cpuLine = lines.FirstOrDefault(line => line.StartsWith("cpu "));
+
+        if (string.IsNullOrEmpty(cpuLine)) return new Cpu();
+
+        cpuValues = cpuLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        long user2 = long.Parse(cpuValues[1]);
+        long nice2 = long.Parse(cpuValues[2]);
+        long system2 = long.Parse(cpuValues[3]);
+        long idle2 = long.Parse(cpuValues[4]);
+        long iowait2 = long.Parse(cpuValues[5]);
+        long irq2 = long.Parse(cpuValues[6]);
+        long softirq2 = long.Parse(cpuValues[7]);
+        long steal2 = long.Parse(cpuValues[8]);
+
+        long total2 = user2 + nice2 + system2 + idle2 + iowait2 + irq2 + softirq2 + steal2;
+
+        long totalDelta = total2 - total;
+        long idleDelta = idle2 - idle;
+
+        float cpuUsage = (float)(totalDelta - idleDelta) / totalDelta * 100;
+        float idleUsage = (float)idleDelta / totalDelta * 100;
+
+        float userUsage = (float)(user2 - user) / totalDelta * 100;
+        float systemUsage = (float)(system2 - system) / totalDelta * 100;
+
+        return new Cpu
+        {
+            CpuNum = processorCount,
+            Total = Math.Round((double)cpuUsage, 2),
+            Sys = Math.Round((double)systemUsage, 2),
+            Used = Math.Round((double)userUsage, 2),
+            Free = Math.Round((double)idleUsage, 2)
+        };
     }
 }

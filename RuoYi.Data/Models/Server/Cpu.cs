@@ -18,12 +18,12 @@
         /**
          * CPU系统使用率
          */
-        public string? Sys { get; set; }
+        public double Sys { get; set; }
 
         /**
          * CPU用户使用率
          */
-        public string? Used { get; set; }
+        public double Used { get; set; }
 
         /**
          * CPU当前等待率
