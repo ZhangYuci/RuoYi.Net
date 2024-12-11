@@ -1,6 +1,7 @@
 ﻿using Hardware.Info;
 using RuoYi.Data.Models;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 
@@ -155,16 +156,15 @@ public class ServerService : ITransient
     }
 
     /// <summary>
-    /// 取 sdk 路径
+    /// 取 runtime 路径
     /// </summary>
     private string GetClrHome()
     {
-        var clrSdks = CmdUtils.Run("dotnet", "--list-sdks");
+        var clrRuntimes = CmdUtils.Run("dotnet", "--list-runtimes");
 
-        // 2.2.110 [C:\Program Files\dotnet\sdk]\r\n7.0.306 [C:\Program Files\dotnet\sdk]\r\n
-        var sdks = clrSdks.Split(Environment.NewLine);
-        
-        var path = sdks.Where(info => info.StartsWith(Environment.Version.Major.ToString())).FirstOrDefault();
+        var runtimes = clrRuntimes.Split(Environment.NewLine);
+
+        var path = runtimes.Where(info => info.IndexOf(Environment.Version.ToString()) > 0).FirstOrDefault();
 
         return path ?? "";
     }
