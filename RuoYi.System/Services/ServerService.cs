@@ -23,7 +23,7 @@ public class ServerService : ITransient
         //_hardwareInfo.RefreshCPUList();
         //_hardwareInfo.RefreshMemoryList();
         _hardwareInfo.RefreshMemoryStatus();
-        //_hardwareInfo.RefreshDriveList();
+        _hardwareInfo.RefreshDriveList();
 
         // cpu
         //var cpuUsed = Convert.ToDouble(_hardwareInfo.CpuList.FirstOrDefault()?.PercentProcessorTime ?? 0);
@@ -97,39 +97,25 @@ public class ServerService : ITransient
         };
 
         // 磁盘相关信息
-        DriveInfo[] drives = DriveInfo.GetDrives();
-        
-        var sysFiles = drives.Where(x=>x.IsReady).Select(d =>
+        var drives = _hardwareInfo.DriveList;
+
+        var sysFiles = drives.Select(d =>
         {
-            var total = d.TotalSize;
-            var free = d.TotalFreeSpace;//GetDriveFreeSpace(d);
+            var total = d.Size;
+            var free = GetDriveFreeSpace(d);
             var used = total - free;
-
-            string driveFormat = d.DriveFormat;
-            string driveType = d.DriveType.ToString();
-
-            // 处理不同平台的差异
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                // 在 Linux 和 macOS 上，DriveFormat 可能不准确
-                driveFormat = "Unknown";
-                // DriveType 可能也需要调整
-                if (d.DriveType == DriveType.Unknown)
-                {
-                    driveType = "Mount Point";
-                }
-            }
 
             return new SysFile
             {
                 DirName = d.Name,
-                SysTypeName = driveFormat,//d.Description,
-                TypeName = driveType.ToString(),//GetFileSystem(d.PartitionList),
-                Total = ConvertFileSize((ulong)total),
-                Free = ConvertFileSize((ulong)free),
-                Used = ConvertFileSize((ulong)used),
+                SysTypeName = d.Description,
+                TypeName = GetFileSystem(d.PartitionList),
+                Total = ConvertFileSize(total),
+                Free = ConvertFileSize(free),
+                Used = ConvertFileSize(used),
                 Usage = MathUtils.Round(Convert.ToDecimal(used) / total, 2) * 100
             };
+
         }).ToList();
 
 
