@@ -52,8 +52,8 @@ public class AadLoginService : ITransient
             throw new ServiceException("无法从 Azure AD 中提取用户名");
         }
 
-        // 查找或创建用户
-        var userDto = await GetOrCreateUserFromAadAsync(aadUserInfo);
+        // 查找用户
+        var userDto = await GetUserFromAadAsync(aadUserInfo);
 
         // 检查用户状态
         if (UserStatus.DELETED.GetValue().Equals(userDto.DelFlag))
@@ -80,9 +80,9 @@ public class AadLoginService : ITransient
     }
 
     /// <summary>
-    /// 从 AAD 用户信息获取或创建用户
+    /// 从 AAD 用户信息获取用户
     /// </summary>
-    private async Task<SysUserDto> GetOrCreateUserFromAadAsync(AzureAdUserInfo aadUserInfo)
+    private async Task<SysUserDto> GetUserFromAadAsync(AzureAdUserInfo aadUserInfo)
     {
         // 尝试通过用户名查找用户
         var userDto = await _sysUserService.GetDtoByUsernameAsync(aadUserInfo.Username);
@@ -116,10 +116,12 @@ public class AadLoginService : ITransient
     /// </summary>
     private async Task RecordLoginInfoAsync(long userId)
     {
-        SysUserDto sysUser = new SysUserDto();
-        sysUser.UserId = userId;
-        sysUser.LoginIp = IpUtils.GetIpAddr();
-        sysUser.LoginDate = DateTime.Now;
+        var sysUser = new SysUserDto
+        {
+            UserId = userId,
+            LoginIp = IpUtils.GetIpAddr(),
+            LoginDate = DateTime.Now
+        };
         await _sysUserService.UpdateUserLoginInfoAsync(sysUser);
     }
 }

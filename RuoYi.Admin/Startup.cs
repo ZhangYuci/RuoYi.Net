@@ -19,7 +19,7 @@ namespace RuoYi.Admin
             services.AddCorsAccessor();
 
             // Azure AD 认证 (如果启用)
-            services.AddAzureAdAuthentication();
+            services.AddAzureAdAuthentication(App.Configuration);
 
             // jwt 鉴权
             services.AddRyJwt();

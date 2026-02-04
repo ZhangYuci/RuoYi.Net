@@ -19,6 +19,10 @@
 ## 使用
 账号/密码: admin/admin123
 
+## 认证方式
+1. 传统用户名密码登录
+2. **Azure Active Directory (AAD) 单点登录** - 支持企业级 Microsoft 账号登录，详见 [Azure AD 集成文档](docs/AzureAD_Integration.md)
+
 ## 内置功能(同若依)
 
 1.  用户管理：用户是系统操作者，该功能主要完成系统用户配置。

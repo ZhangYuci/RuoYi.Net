@@ -15,16 +15,15 @@ public static class AzureAdServiceCollectionExtensions
     /// 添加 Azure AD 认证
     /// </summary>
     /// <param name="services">服务集合</param>
+    /// <param name="configuration">配置</param>
     /// <returns></returns>
-    public static IServiceCollection AddAzureAdAuthentication(this IServiceCollection services)
+    public static IServiceCollection AddAzureAdAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
         // 配置 Azure AD 选项
         services.AddOptions<AzureAdOptions>()
             .BindConfiguration("AzureAd")
             .ValidateDataAnnotations();
 
-        var serviceProvider = services.BuildServiceProvider();
-        var configuration = serviceProvider.GetRequiredService<IConfiguration>();
         var azureAdOptions = configuration.GetSection("AzureAd").Get<AzureAdOptions>();
 
         // 只有在启用时才添加 AAD 认证
