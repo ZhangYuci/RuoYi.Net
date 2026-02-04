@@ -6,6 +6,7 @@ using RuoYi.Common.Files;
 using RuoYi.Framework.Cache;
 using RuoYi.Framework.Filters;
 using RuoYi.Framework.RateLimit;
+using RuoYi.Framework.AzureAd.Extensions;
 
 namespace RuoYi.Admin
 {
@@ -16,6 +17,9 @@ namespace RuoYi.Admin
          {
             services.AddConsoleFormatter();
             services.AddCorsAccessor();
+
+            // Azure AD 认证 (如果启用)
+            services.AddAzureAdAuthentication();
 
             // jwt 鉴权
             services.AddRyJwt();
